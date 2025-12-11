@@ -1,9 +1,22 @@
 from fastapi import FastAPI
-from app.auth import router as auth_router
-from app.database import engine, Base
+from fastapi.middleware.cors import CORSMiddleware
+from app.routes import auth, profile
 
-# create tables if not exist
-Base.metadata.create_all(bind=engine)
+app = FastAPI(title="Music Profile API")
 
-app = FastAPI()
-app.include_router(auth_router)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+app.include_router(auth.router)
+app.include_router(profile.router)
+
+@app.get("/")
+def root():
+    return {
+        "message": "Music Profile API is running"
+        }
